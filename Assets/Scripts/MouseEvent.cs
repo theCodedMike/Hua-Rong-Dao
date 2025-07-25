@@ -19,6 +19,9 @@ public class MouseEvent : MonoBehaviour
 
     private void Update()
     {
+        if (GameController.gameOver)
+            return;
+        
         if (Input.GetMouseButtonDown(0))
         {
             _firstPos = _mainCamera.ScreenToWorldPoint(Input.mousePosition);
