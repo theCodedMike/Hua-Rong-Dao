@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+
 
 // 棋子类型
 public enum ChessType
@@ -18,21 +20,38 @@ public enum Direction
     Down
 }
 
-public class Chess
+public class Chess : MonoBehaviour
 {
     public ChessType chessType;
+    public string chessName;
     public int leftX; // 棋子左上角坐标x
     public int leftY; // 棋子左上角坐标y
-    public string chessName; // 棋子名称
-    public GameObject chessPrefab; // 预制体
-
-    public Chess(GameObject go, ChessType chessType, int x, int y)
+    public int width;  // 棋子宽度
+    public int height; // 棋子高度
+    
+    
+    public static Chess Build(GameObject chessPrefab, ChessType chessType, int x, int y)
     {
-        this.chessType = chessType;
-        leftX = x;
-        leftY = y;
-        chessName = go.name;
-        chessPrefab = go;
-        Object.Instantiate(chessPrefab, new Vector2(x, y), Quaternion.identity);
+        GameObject chessObj = Instantiate(chessPrefab, new Vector2(x, y), Quaternion.identity);
+        chessObj.AddComponent<Chess>();
+        Chess chess = chessObj.GetComponent<Chess>();
+        chess.chessType = chessType;
+        chess.chessName = chessPrefab.name;
+        chess.leftX = x;
+        chess.leftY = y;
+        (chess.width, chess.height) = chess.GetWidthAndHeight(chessType);
+        return chess;
+    }
+
+    private (int, int) GetWidthAndHeight(ChessType type)
+    {
+        return type switch
+        {
+            ChessType.Rect11 => (1, 1),
+            ChessType.Rect12 => (1, 2),
+            ChessType.Rect21 => (2, 1),
+            ChessType.Rect22 => (2, 2),
+            _ => throw new ArgumentException($"chessType unknown: {type}")
+        };
     }
 }
